@@ -6,6 +6,7 @@ class TodoController extends GetxController {
   final isLoading = false.obs;
   final errorMessage = ''.obs;
   final todos = <Todo>[].obs;
+  final filterTodos = <Todo>[].obs;
 
   @override
   void onInit() {
@@ -37,5 +38,12 @@ class TodoController extends GetxController {
       return '';
     }
     return text[0].toUpperCase() + text.substring(1);
+  }
+  void filterToDo(String query){
+    if(query.isNotEmpty){
+      filterTodos.assignAll(todos.where((filterQuery)=>filterQuery.title.toLowerCase().contains(query.toLowerCase())).toList());
+    }else{
+      filterTodos.assignAll(todos);
+    }
   }
 }

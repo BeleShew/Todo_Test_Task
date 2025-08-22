@@ -16,54 +16,73 @@ class HomePage extends StatelessWidget {
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
-      body: Center(
-        child: Obx(() {
-          if (todoController.isLoading.value) {
-            return const CircularProgressIndicator();
-          }
-          if (todoController.errorMessage.isNotEmpty) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(todoController.errorMessage.value),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => todoController.loadTodos(),
-                  child: const Text('Retry'),
-                ),
-              ],
-            );
-          }
-          return ListView.builder(
-            itemCount: todoController.todos.length,
-            itemBuilder: (context, index) {
-              final todo = todoController.todos[index];
-              return Container(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1.0),
-                  ),
-                ),
-                child: ListTile(
-                  title: Text(
-                    todoController.capitalizeFirstLetter(todo.title),
-                    style: TextStyle(
-                      decoration: TextDecoration.none,
-                      color: Colors.black,
+      body: Column(
+        mainAxisSize:  MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: "Search",
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search_rounded),
+
+              ),
+              onChanged: (values)=>todoController.filterToDo(values),
+            ),
+          ),
+
+          Expanded(
+            child: Obx(() {
+              if (todoController.isLoading.value) {
+                return const CircularProgressIndicator();
+              }
+              if (todoController.errorMessage.isNotEmpty) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(todoController.errorMessage.value),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => todoController.loadTodos(),
+                      child: const Text('Retry'),
                     ),
-                  ),
-                  leading: Checkbox(
-                    value: todo.completed,
-                    onChanged: (bool? newValue) {
-                      todoController.toggleTodoCompletion(todo.id);
-                    },
-                    activeColor: Colors.blue,
-                  ),
-                ),
+                  ],
+                );
+              }
+              return ListView.builder(
+                itemCount: todoController.filterTodos.length,
+                itemBuilder: (context, index) {
+                  final todo = todoController.filterTodos[index];
+                  return Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1.0),
+                      ),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        todoController.capitalizeFirstLetter(todo.title),
+                        style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.black,
+                        ),
+                      ),
+                      leading: Checkbox(
+                        value: todo.completed,
+                        onChanged: (bool? newValue) {
+                          todoController.toggleTodoCompletion(todo.id);
+                        },
+                        activeColor: Colors.blue,
+                      ),
+                    ),
+                  );
+                },
               );
-            },
-          );
-        }),
+            }),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => todoController.loadTodos(),
